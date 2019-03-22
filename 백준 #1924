@@ -1,0 +1,14 @@
+yy = input()
+zz = yy.split()
+month = int(zz[0])
+day = int(zz[1])
+
+what_day = {1:"MON", 2:"TUE",3:"WED",4:"THU",5:"FRI",6:"SAT",0:"SUN"}
+month_date = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+if month!=1:    
+    for i in range(1,month):
+        day += month_date[i-1]
+
+j = day % 7
+print(what_day[j])
