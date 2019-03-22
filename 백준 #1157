@@ -1,0 +1,22 @@
+import sys
+
+text = sys.stdin.readline().rstrip().upper()
+
+storage = dict()
+
+for i in text:
+    if i not in storage:
+        storage[i] = 1
+    else:
+        storage[i] += 1
+
+a = list(storage.values())
+b = list(storage.keys())
+
+Max_value = max(a)
+
+if a.count(Max_value) >= 2:
+    print("?")
+else:
+    Index = a.index(Max_value)
+    print(b[Index])
