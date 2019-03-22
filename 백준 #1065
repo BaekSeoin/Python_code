@@ -1,0 +1,11 @@
+N = int(input())
+count = 99
+
+if N < 100:
+    print(N)
+elif N >= 100:
+    for i in range(100,N+1):
+        a = str(i)
+        if int(a[1]) - int(a[0]) == int(a[2]) - int(a[1]):
+            count += 1
+    print(count)
