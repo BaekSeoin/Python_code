@@ -1,0 +1,129 @@
+#binary search tree
+#기능 : insert(삽입), delete(삭제), find(찾기), print_tree(트리 출력)
+
+class Node:
+    def __init__(self,a):
+        self.data = a
+        self.parent = None
+        self.left = None
+        self.right = None
+
+class tree:
+    def __init__(self):
+        self.root = Node(None)
+
+    def insert_(self,node,Newdata):
+        if node is None:
+            return Newdata
+
+        if Newdata.data <= node.data:
+            node.left = self.insert_(node.left, Newdata)
+
+        elif Newdata.data > node.data:
+            node.right = self.insert_(node.right, Newdata)
+
+        if Newdata.parent == None:
+            Newdata.parent = node
+
+        return node
+
+    def insert(self,data):
+        if self.root.data == None:
+            self.root.data = data
+        else:
+            Newdata = Node(data)
+            self.insert_(self.root, Newdata)
+
+    def find(self,data):
+        return self.find_(self.root, data)
+
+    def find_(self, root, data):
+        if root is None or root.data == data:
+            return root is not None #root가 None이면 False, 아니면 True?
+        elif data < root.data:
+            return self.find_(root.left, data)
+        else:
+            return self.find_(root.right, data)
+
+    def find_for_delete(self,root, data):
+        if root is None:
+            return root is not None
+        elif root.data == data:
+            return root
+        elif data < root.data:
+            return self.find_for_delete(root.left, data)
+        else:
+            return self.find_for_delete(root.right, data)
+
+    def delete__(self,root):
+
+        while root.left != None:
+            root = root.left
+
+        return root
+
+
+    def delete(self,data):
+        return self.delete_(data)
+
+    def delete_(self,data):
+        current = self.find_for_delete(self.root, data)
+        if current == False:
+            return False
+        else:
+            if (current.left == None) and (current.right == None):
+                a = current.parent
+
+                if a.left == current:
+                    a.left = None
+                elif a.right == current:
+                    a.right = None
+
+            elif (current.left != None) and (current.right != None):
+                b = self.delete__(current.right)
+                if b == current.right:
+                    if b.right == None:
+                        b.parent.right = None
+                    elif b.right != None:
+                        b.parent.right = b.right
+
+                elif b.right == None:
+                    b.parent.left = None
+
+                elif b.right != None:
+                    b.parent.left = b.right
+
+                first = current.parent
+                second = current.left
+                third = current.right
+
+                if first.left == current:
+                    first.left = b
+                elif first.right == current:
+                    first.right = b
+                b.left = second
+                b.right = third
+
+            elif (current.left != None) or (current.right != None):
+                a = current.parent
+                if current.left != None:
+                    if a.left == current:
+                        a.left = current.left
+                    elif a.right == current:
+                        a.right = current.left
+                elif current.right != None:
+                    if a.left == current:
+                        a.left = current.right
+                    elif a.right == current:
+                        a.right = current.right
+
+    def _print_tree(self, root):
+        if root == None:
+            return
+
+        self._print_tree(root.left)
+        self._print_tree(root.right)
+        print(root.data)
+
+    def print_tree(self):
+        self._print_tree(self.root)
