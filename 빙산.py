@@ -1,0 +1,83 @@
+import sys
+import copy
+from collections import deque
+
+sys.setrecursionlimit(10**9)
+
+sys.stdin = open("input.txt","r")
+
+R, C = tuple(map(int, sys.stdin.readline().rstrip().split()))
+
+ocean = [[int(i) for i in sys.stdin.readline().rstrip().split()] for j in range(R)]
+
+board = [[0 for i in range(C)] for j in range(R)]
+
+direction = [(-1,0),(1,0),(0,-1),(0,1)]
+
+def inRange(a,b):
+    if 0<=a < R and 0<=b<C:
+        return True
+    return False
+
+def remove(ocean, board_2):
+    for i in range(1,R-1):
+        for j in range(1,C-1):
+            if ocean[i][j] != 0:
+                count = 0
+                board_2[i][j] =1
+                for k in direction:
+                    nextPos = (i + k[0], j + k[1])
+                    if inRange(nextPos[0],nextPos[1]) and ocean[nextPos[0]][nextPos[1]] == 0 and board_2[nextPos[0]][nextPos[1]] == 0:
+                        count +=1
+                if ocean[i][j] >= count:
+                    ocean[i][j] -= count
+                else:
+                    ocean[i][j] = 0
+    return ocean,board_2
+
+
+
+def bfs(List, ocean, board_2, union):
+    while List:
+        current = List.popleft()
+        for k in direction:
+            nextPos = (current[0]+k[0], current[1] + k[1])
+            if inRange(nextPos[0],nextPos[1]) and ocean[nextPos[0]][nextPos[1]] != 0 and board_2[nextPos[0]][nextPos[1]] ==1:
+                board_2[nextPos[0]][nextPos[1]] = union
+                List.append(nextPos)
+
+
+def dfs(ocean, board_2, union,current):
+    for k in direction:
+        nextPos = (current[0]+k[0], current[1]+k[1])
+        if inRange(nextPos[0],nextPos[1]) and ocean[nextPos[0]][nextPos[1]] != 0 and board_2[nextPos[0]][nextPos[1]] ==1:
+            board_2[nextPos[0]][nextPos[1]] = union
+            dfs(ocean, board_2,union, nextPos)
+
+Time = 0
+while True:
+    board_2 = copy.deepcopy(board)
+    ocean, board_2 = remove(ocean,board_2)
+
+    union = 1
+
+    for i in range(1,R-1):
+        for j in range(1,C-1):
+            if ocean[i][j] != 0 and board_2[i][j] == 1:
+                union += 1
+                if union >2:
+                    break
+                board_2[i][j] = union
+                List = deque()
+                List.append((i,j))
+                bfs(List,ocean, board_2,union)
+        if union >2:
+            break
+
+    Time +=1
+    if union > 2:
+        print(Time)
+        break
+    elif union == 1:
+        print(0)
+        break

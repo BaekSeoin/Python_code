@@ -1,0 +1,88 @@
+import sys
+import copy
+
+sys.stdin = open("input.txt","r")
+
+n,m = tuple(map(int,sys.stdin.readline().rstrip().split()))
+
+space = [[i for i in sys.stdin.readline().rstrip()] for j in range(n)]
+
+PR,PC = tuple(map(int,sys.stdin.readline().rstrip().split()))
+
+current = (PR-1,PC-1)
+
+def change_signal(signal, dir):
+    if signal == "\\":
+        if dir == (-1,0):
+            dir = (0,-1)
+        elif dir == (0,-1):
+            dir = (-1,0)
+        elif dir == (0,1):
+            dir = (1,0)
+        else:
+            dir = (0,1)
+    else:
+        if dir == (0,1):
+            dir = (-1,0)
+        elif dir == (0,-1):
+            dir = (1,0)
+        elif dir == (1,0):
+            dir = (0,-1)
+        else:
+            dir = (0,1)
+    return dir
+
+#U:위/R:오른/D:아래/L:왼
+direction = {(-1,0):'U',(0,1):'R',(1,0):'D',(0,-1):'L'}
+
+final_time = 0
+
+def inRange(a,b):
+    if 0 <=a<n and 0<=b <m:
+        return True
+    return False
+
+check = [[[] for i in range(m)] for j in range(n)]
+end = 0
+for i in direction:
+    current_pos = current
+    Time = 0
+    dir = i
+    check_2 = copy.deepcopy(check)
+    check_2[current_pos[0]][current_pos[1]].append(dir)
+    while True:
+        current_pos = (current_pos[0] + dir[0], current_pos[1] + dir[1])
+        if inRange(current_pos[0],current_pos[1]):
+            if dir in check_2[current_pos[0]][current_pos[1]]:
+                print(direction[i])
+                print("Voyager")
+                end = 1
+                break
+            elif space[current_pos[0]][current_pos[1]] == '.':
+                Time +=1
+                check_2[current_pos[0]][current_pos[1]].append(dir)
+            elif space[current_pos[0]][current_pos[1]] == 'C':
+                Time +=1
+                if Time > final_time:
+                    final_time = Time
+                    final_dir = direction[i]
+                break
+            elif space[current_pos[0]][current_pos[1]] == '\\' or space[current_pos[0]][current_pos[1]] == '/':
+                check_2[current_pos[0]][current_pos[1]].append(dir)
+                signal = space[current_pos[0]][current_pos[1]]
+                dir = change_signal(signal, dir)
+                Time +=1
+
+        else:
+            Time +=1
+            if Time > final_time:
+                final_time = Time
+                final_dir = direction[i]
+            break
+
+    if end == 1:
+        break
+
+if end == 0:
+    print(final_dir)
+    print(final_time)
