@@ -1,0 +1,69 @@
+#감시
+import sys
+import copy
+sys.stdin = open("input.txt","r")
+
+row, column = tuple(map(int,sys.stdin.readline().rstrip().split()))
+board = [[int(i) for i in sys.stdin.readline().rstrip().split()] for j in range(row)]
+CCTV = []
+
+def inRange(a,b):
+    if 0 <= a < row and 0 <= b < column:
+        return True
+    return False
+
+for i in range(row):
+    for j in range(column):
+        if board[i][j] !=0 and board[i][j] != 6:
+            CCTV.append((board[i][j], (i,j)))
+
+def CCTV_check(CCTV_num,board,current, number):
+    CCTV_func = {1:[[(1,0)],[(0,1)],[(-1,0)],[(0,-1)]],2:[[(0,-1),(0,1)],[(-1,0),(1,0)]],3:[[(-1,0),(0,1)],[(-1,0),(0,-1)],[(0,1),(1,0)],[(0,-1),(1,0)]],
+                 4:[[(0,1),(-1,0),(0,-1)],[(-1,0),(0,-1),(1,0)],[(0,-1),(1,0),(0,1)],[(-1,0),(0,1),(1,0)]],5:[[(0,-1),(0,1),(1,0),(-1,0 )]]}
+    dir = CCTV_func[CCTV_num]
+    board_2 = copy.deepcopy(board)
+    direction = dir[number]
+
+    for i in direction:
+        nextPos = (current[0] + i[0], current[1] + i[1])
+        while inRange(nextPos[0], nextPos[1]):
+            if board_2[nextPos[0]][nextPos[1]] == 6:
+                break
+            elif board_2[nextPos[0]][nextPos[1]] !=0:
+                nextPos = (nextPos[0] + i[0], nextPos[1] + i[1])
+            else:
+                board_2[nextPos[0]][nextPos[1]] = "#"
+                nextPos = (nextPos[0] + i[0], nextPos[1] + i[1])
+    return board_2
+
+count = {1:4, 2:2, 3:4,4:4,5:1}
+
+ans = 0
+final = []
+def dfs(CCTV, i,board):
+    global ans
+    a = CCTV[i]
+    CCTV_num = a[0]
+    current = a[1]
+
+    for j in range(count[CCTV_num]):
+        board_2 = CCTV_check(CCTV_num,board,current,j)
+        if i == len(CCTV)-1:
+            for k in range(row):
+                for h in range(column):
+                    if board_2[k][h] == 0:
+                        ans +=1
+            final.append(ans)
+            ans = 0
+        else:
+            dfs(CCTV,i+1, board_2)
+
+if len(CCTV) == 0:
+    for i in range(row):
+        for j in range(column):
+            if board[i][j] == 0:
+                ans +=1
+    print(ans)
+else:
+    dfs(CCTV,0,board)
+    print(min(final))
